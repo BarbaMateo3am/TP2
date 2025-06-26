@@ -27,7 +27,7 @@
 
   <main class="main-content">
     <section class="form-container">
-      <h1 class="form-title" id="form-title">HOLA</h1>
+      <h1 class="form-title" id="form-title">Suscripción</h1>
       <form id="subscription-form">
         <div class="form-group">
           <label>Nombre completo</label>
@@ -89,6 +89,14 @@
   <footer class="footer">
     <p>&copy; 2025 Diario El Marplatense. Todos los derechos reservados.</p>
   </footer>
+
+
+  <div id="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:#000000aa; z-index:999;">
+    <div style="background:#fff; color:#000; padding:20px; margin:100px auto; max-width:600px; border-radius:10px; box-shadow:0 0 10px #000;">
+      <pre id="modal-text" style="white-space:pre-wrap;"></pre>
+      <button onclick="document.getElementById('modal').style.display='none'">Cerrar</button>
+    </div>
+  </div>
 
   <script src="suscripcion.js"></script>
 </body>

@@ -1,6 +1,4 @@
 const form = document.getElementById('subscription-form');
-const nombre = document.getElementById('nombre');
-const formTitle = document.getElementById('form-title');
 
 const fields = [
   { id: 'nombre', validator: val => val.length > 6 && val.includes(' '), error: 'Debe tener más de 6 letras y un espacio.' },
@@ -31,35 +29,58 @@ fields.forEach(({ id, validator, error }) => {
   });
 });
 
-nombre.addEventListener('keydown', () => {
-  formTitle.textContent = 'HOLA ' + nombre.value;
-});
-nombre.addEventListener('focus', () => {
-  formTitle.textContent = 'HOLA ' + nombre.value;
-});
+function mostrarModal(texto) {
+  document.getElementById('modal-text').textContent = texto;
+  document.getElementById('modal').style.display = 'block';
+}
 
-form.addEventListener('submit', (e) => {
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
-  let errors = [];
+  let errores = [];
+  const datosAEnviar = {};
 
   fields.forEach(({ id, validator, error }) => {
     const input = document.getElementById(id);
-    const value = input.value.trim();
-    if (!validator(value)) {
-      errors.push(`${id}: ${error}`);
+    const valor = input.value.trim();
+    if (!validator(valor)) {
+      errores.push(`${id}: ${error}`);
       document.getElementById('error-' + id).textContent = error;
+    } else {
+      datosAEnviar[id] = valor;
     }
   });
 
-  if (errors.length > 0) {
-    alert('Errores en el formulario:\n' + errors.join('\n'));
-  } else {
-    const datos = fields.map(({ id }) => {
-      const val = document.getElementById(id).value;
-      return `${id}: ${val}`;
-    }).join('\n');
-    alert('Datos ingresados:\n' + datos);
+  if (errores.length > 0) {
+    mostrarModal('Errores en el formulario:\n' + errores.join('\n'));
+    return;
+  }
+
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(datosAEnviar)
+    });
+
+    if (!res.ok) {
+      const error = await res.text();
+      throw new Error(`Error ${res.status}: ${error}`);
+    }
+
+    const data = await res.json();
+    mostrarModal('¡Formulario enviado con éxito!\n\nRespuesta del servidor:\n' + JSON.stringify(data, null, 2));
+    localStorage.setItem('datosSuscripcion', JSON.stringify(data));
     form.reset();
-    formTitle.textContent = 'HOLA';
+  } catch (error) {
+    mostrarModal('Error al enviar:\n' + error.message);
   }
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+  const guardado = localStorage.getItem('datosSuscripcion');
+  if (guardado) {
+    const data = JSON.parse(guardado);
+    mostrarModal('Datos cargados desde LocalStorage:\n' + JSON.stringify(data, null, 2));
+  }
+});
+
