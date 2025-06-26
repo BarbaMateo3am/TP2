@@ -31,12 +31,6 @@ fields.forEach(({ id, validator, error }) => {
   });
 });
 
-nombre.addEventListener('keydown', () => {
-  formTitle.textContent = 'HOLA ' + nombre.value;
-});
-nombre.addEventListener('focus', () => {
-  formTitle.textContent = 'HOLA ' + nombre.value;
-});
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
